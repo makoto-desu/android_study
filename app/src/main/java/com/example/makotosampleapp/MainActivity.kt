@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity() {
 
 //        setTitle("TEST LIST");
 
-        // BookListFragment表示処理
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fl_activity_main, ListFragment())

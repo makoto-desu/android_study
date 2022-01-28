@@ -37,7 +37,7 @@ class ListFragment : Fragment() {
         recyclerView.adapter = mAdapter
 
 
-        // 書籍情報セルのクリック処理
+        // セルのクリック処理
         mAdapter.setOnCellClickListener(
             // インターフェースの再利用は想定しておらず、その場限りでしか使わないためobject式として宣言
             object : CustomAdapter.OnCellClickListener {

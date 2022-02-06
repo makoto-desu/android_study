@@ -37,8 +37,26 @@ class CustomAdapter(private val sampleList: ArrayList<Sample>)
         viewHolder.title.text = sampleData.title
         viewHolder.desc.text = sampleData.desc
         viewHolder.image.setImageResource(sampleData.imageId)
+
+        viewHolder.itemView.setOnClickListener {
+            // セルがクリックされた時にインターフェースの処理が実行される
+            listener.onItemClick(sampleData)
+        }
     }
 
     // 表示数を返す
     override fun getItemCount() = sampleList.size
+
+    // リスナを格納する変数を定義（lateinitで初期化を遅らせている）
+    private lateinit var listener: OnCellClickListener
+
+    // インターフェースを作成
+    interface  OnCellClickListener {
+        fun onItemClick(sample: Sample)
+    }
+
+    // リスナーをセット
+    fun setOnCellClickListener(listener: OnCellClickListener) {
+        this.listener = listener
+    }
 }

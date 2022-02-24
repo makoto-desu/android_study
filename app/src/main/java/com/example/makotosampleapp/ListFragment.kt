@@ -1,52 +1,77 @@
 package com.example.makotosampleapp
 
-import Sample
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 lateinit var mAdapter: CustomAdapter
 
 class ListFragment : Fragment() {
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.list_fragment, container, false)
 
-        // タイトル
         activity?.title = "一覧"
+        getNoticeList()
 
+        return view
+    }
+
+    fun getNoticeList() {
+        RetrofitClient.service.getNoticeList().enqueue(object : Callback<NoticeList> {
+            override fun onResponse(
+                call: Call<NoticeList>,
+                response: Response<NoticeList>
+            ) {
+                if (response.isSuccessful) {
+                    Log.i("Info", response.body().toString())
+                    var result: NoticeList? = response!!.body()
+                    if (result != null) {
+                        setRecyclerView(result)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<NoticeList>, t: Throwable) {
+                Log.e("Error", t.toString())
+            }
+        })
+    }
+
+    fun setRecyclerView(data: NoticeList?) {
         // RecyclerViewの取得
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        var recyclerView = view?.findViewById<RecyclerView>(R.id.recycler_view)
 
         // LayoutManagerの設定
-        recyclerView.layoutManager = LinearLayoutManager(view.context)
+        recyclerView?.layoutManager = LinearLayoutManager(view?.context)
 
         // CustomAdapterの生成と設定
-        mAdapter = CustomAdapter(createDummyData())
-        recyclerView.adapter = mAdapter
+        mAdapter = CustomAdapter(data)
+//        mAdapter.notifyDataSetChanged()
+        recyclerView?.adapter = mAdapter
 
-
-        // セルのクリック処理
         mAdapter.setOnCellClickListener(
             // インターフェースの再利用は想定しておらず、その場限りでしか使わないためobject式として宣言
             object : CustomAdapter.OnCellClickListener {
-                override fun onItemClick(sample: Sample) {
+                override fun onItemClick(notice: Notice) {
 
                     setFragmentResult("data", bundleOf(
-                        "imageId" to sample.imageId,
-                        "title" to sample.title,
-                        "desc" to sample.desc
+                        "image" to notice.image,
+                        "title" to notice.title,
+                        "desc" to notice.description
                     ))
 
                     // 画面遷移処理
@@ -58,64 +83,6 @@ class ListFragment : Fragment() {
                 }
             }
         )
-
-        return view
     }
 
-    // dummyデータ
-    private fun createDummyData(): ArrayList<Sample> {
-        val data1 = Sample("たいとるだよ！", "説明！", R.drawable.sample1)
-        val data2 = Sample("たいとるですよ！", "説明！", R.drawable.sample1)
-        val data3 = Sample("たいとるだわよ！！", "説明！", R.drawable.sample1)
-        val data4 = Sample("たいとるん", "説明！", R.drawable.sample1)
-        val data5 = Sample("TITILEEEE", "説明！", R.drawable.sample1)
-        val data6 = Sample("たいとるだよ！", "説明！", R.drawable.sample1)
-        val data7 = Sample("たいとるですよ！", "説明！", R.drawable.sample1)
-        val data8 = Sample("たいとるだわよ！！", "説明！", R.drawable.sample1)
-        val data9 = Sample("たいとるん", "説明！", R.drawable.sample1)
-        val data10 = Sample("TITILEEEE", "説明！", R.drawable.sample1)
-        val data11 = Sample("たいとるだよ！", "説明！", R.drawable.sample1)
-        val data12 = Sample("たいとるですよ！", "説明！", R.drawable.sample1)
-        val data13 = Sample("たいとるだわよ！！", "説明！", R.drawable.sample1)
-        val data14 = Sample("たいとるん", "説明！", R.drawable.sample1)
-        val data15 = Sample("TITILEEEE", "説明！", R.drawable.sample1)
-        val data16 = Sample("たいとるだよ！", "説明！", R.drawable.sample1)
-        val data17 = Sample("たいとるですよ！", "説明！", R.drawable.sample1)
-        val data18 = Sample("たいとるだわよ！！", "説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！説明！", R.drawable.sample1)
-        val data19 = Sample("たいとるん", "説明！", R.drawable.sample1)
-        val data20 = Sample("TITILEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", "説明！", R.drawable.sample1)
-        val data21 = Sample("たいとるだよ！", "説明！", R.drawable.sample1)
-        val data22 = Sample("たいとるですよ！", "説明！", R.drawable.sample1)
-        val data23 = Sample("たいとるだわよ！！", "説明！", R.drawable.sample1)
-        val data24 = Sample("たいとるん", "説明！", R.drawable.sample1)
-        val data25 = Sample("TITILEEEE123", "説明！", R.drawable.sample1)
-
-        return arrayListOf(
-            data1,
-            data2,
-            data3,
-            data4,
-            data5,
-            data6,
-            data7,
-            data8,
-            data9,
-            data10,
-            data11,
-            data12,
-            data13,
-            data14,
-            data15,
-            data16,
-            data17,
-            data18,
-            data19,
-            data20,
-            data21,
-            data22,
-            data23,
-            data24,
-            data25
-        )
-    }
 }
